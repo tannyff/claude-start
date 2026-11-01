@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude с нуля</title>
+<meta name="description" content="Пошаговый гайд: как начать работать с Claude — регистрация, тарифы, первые запросы, проекты, артефакты и готовые промпты для блога.">
+<meta property="og:title" content="Claude с нуля — бесплатный гайд">
+<meta property="og:description" content="От регистрации до первого результата за один вечер. Готовые промпты внутри.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000000;
+  --surface:#15110e;
+  --line:#2a221c;
+  --orange:#d97757;
+  --orange-hi:#f08a63;
+  --text:#f3eee6;
+  --muted:#a1968c;
+  --display:"Unbounded",system-ui,sans-serif;
+  --body:"Golos Text",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased}
+a{color:var(--orange-hi)}
+:focus-visible{outline:2px solid var(--orange-hi);outline-offset:3px;border-radius:4px}
+
+.progress{position:fixed;inset:0 0 auto 0;height:4px;background:var(--line);z-index:10}
+.progress i{display:block;height:100%;width:0;background:var(--orange);transition:width .4s ease}
+
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+
+/* hero */
+.hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:72px 0 48px}
+.by{color:var(--muted);font-size:15px;margin-bottom:28px}
+.by a{color:var(--text);text-decoration:none;border-bottom:1px solid var(--orange)}
+h1{font:900 clamp(52px,14vw,112px)/.92 var(--display);letter-spacing:-.03em}
+h1 span{display:block;color:var(--orange)}
+.lead{font-size:clamp(18px,4.6vw,21px);color:var(--text);max-width:34ch;margin:28px 0 36px}
+
+.prompt{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px 18px 14px;max-width:560px}
+.prompt .typed{min-height:3.2em;font-size:17px;color:var(--text)}
+.prompt .typed::after{content:"";display:inline-block;width:2px;height:1.1em;background:var(--orange);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite}
+.prompt .bar{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:var(--muted);font-size:14px}
+.send{width:38px;height:38px;border-radius:12px;background:var(--orange);display:grid;place-items:center}
+.send svg{width:18px;height:18px}
+@keyframes blink{50%{opacity:0}}
+
+.start{display:inline-block;margin-top:36px;background:var(--orange);color:#000;font:700 16px/1 var(--display);padding:18px 26px;border-radius:14px;text-decoration:none}
+.start:hover{background:var(--orange-hi)}
+
+/* steps */
+.toc{border-top:1px solid var(--line);padding:40px 0}
+.toc p{color:var(--muted);margin-bottom:14px}
+.toc ol{list-style:none;display:grid;gap:8px;counter-reset:t}
+.toc li{counter-increment:t}
+.toc a{color:var(--text);text-decoration:none;display:flex;gap:14px;align-items:baseline}
+.toc a::before{content:counter(t);font:700 14px var(--display);color:var(--orange);min-width:22px}
+.toc a.done{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--orange)}
+
+.step{border-top:1px solid var(--line);padding:56px 0 48px;scroll-margin-top:16px}
+.num{font:900 72px/1 var(--display);color:var(--orange);letter-spacing:-.04em}
+h2{font:700 clamp(26px,6.4vw,36px)/1.15 var(--display);margin:14px 0 20px;letter-spacing:-.01em}
+h3{font:600 19px/1.3 var(--body);margin:28px 0 10px}
+.step p{margin-bottom:14px;max-width:62ch}
+.step ul,.step ol.list{margin:0 0 16px 22px}
+.step li{margin-bottom:8px}
+.step li::marker{color:var(--orange)}
+.note{background:var(--surface);border-left:3px solid var(--orange);border-radius:0 14px 14px 0;padding:16px 18px;margin:20px 0;color:var(--text)}
+.note b{color:var(--orange-hi);font-weight:600}
+
+.plans{display:grid;gap:12px;margin:20px 0}
+.plan{border:1px solid var(--line);border-radius:18px;padding:18px 20px}
+.plan.pick{border-color:var(--orange)}
+.plan h4{font:700 20px var(--display);display:flex;justify-content:space-between;gap:12px}
+.plan h4 em{font-style:normal;color:var(--orange)}
+.plan p{color:var(--muted);margin:8px 0 0;font-size:16px}
+
+.compare{display:grid;gap:12px;margin:18px 0}
+.compare div{border-radius:16px;padding:16px 18px;font-size:16px}
+.bad{background:#1c1210;border:1px dashed #5a3a30;color:var(--muted)}
+.good{background:var(--surface);border:1px solid var(--orange)}
+.compare small{display:block;font:700 13px var(--display);margin-bottom:6px}
+.bad small{color:#b9806c}.good small{color:var(--orange)}
+
+.formula{display:grid;gap:10px;margin:18px 0;counter-reset:f;list-style:none}
+.formula li{background:var(--surface);border-radius:14px;padding:14px 16px 14px 56px;position:relative;counter-increment:f;margin:0}
+.formula li::before{content:counter(f);position:absolute;left:16px;top:12px;font:900 24px var(--display);color:var(--orange)}
+.formula b{font-weight:600}
+
+.done-btn{margin-top:18px;background:none;border:1px solid var(--line);color:var(--text);font:600 15px var(--body);padding:12px 18px;border-radius:12px;cursor:pointer;display:inline-flex;gap:10px;align-items:center}
+.done-btn::before{content:"";width:18px;height:18px;border:2px solid var(--muted);border-radius:6px}
+.done-btn[aria-pressed="true"]{border-color:var(--orange);color:var(--orange-hi)}
+.done-btn[aria-pressed="true"]::before{background:var(--orange);border-color:var(--orange);box-shadow:inset 0 0 0 3px var(--bg)}
+
+/* prompts */
+.prompts{display:grid;gap:14px;margin-top:22px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px}
+.card h4{font:600 16px var(--body);color:var(--orange-hi);margin-bottom:8px}
+.card pre{white-space:pre-wrap;font:400 15.5px/1.55 var(--body);color:var(--text)}
+.copy{margin-top:12px;background:var(--orange);color:#000;border:0;font:600 14px var(--body);padding:9px 14px;border-radius:10px;cursor:pointer}
+.copy.ok{background:var(--text)}
+
+/* end */
+.end{border-top:1px solid var(--line);padding:64px 0 80px}
+.end h2{font-size:clamp(30px,8vw,48px)}
+.end .start{margin-top:20px}
+.end .small{color:var(--muted);font-size:15px;margin-top:28px}
+footer{color:var(--muted);font-size:13px;padding:0 0 40px}
+
+@media (min-width:760px){
+  .step{display:grid;grid-template-columns:120px 1fr;column-gap:24px}
+  .step>.num{grid-row:1/span 40;position:sticky;top:28px;align-self:start}
+  .step>*:not(.num){grid-column:2}
+  .plans{grid-template-columns:repeat(3,1fr)}
+  .compare{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .prompt .typed::after{animation:none}
+  .progress i{transition:none}
+}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"><i id="bar"></i></div>
+
+<main class="wrap">
+
+<header class="hero">
+  <p class="by">Бесплатный гайд от Татьяны, <a href="https://www.instagram.com/tannyff_m/">@tannyff_m</a></p>
+  <h1>Claude <span>с нуля</span></h1>
+  <p class="lead">От регистрации до первого результата за один вечер. Без технических слов и с готовыми промптами.</p>
+  <div class="prompt" aria-label="Пример запроса к Claude">
+    <div class="typed" id="typed"></div>
+    <div class="bar"><span>Claude</span><span class="send" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></span></div>
+  </div>
+  <a class="start" href="#s1">Начать с первого шага</a>
+</header>
+
+<nav class="toc" aria-label="Шаги гайда">
+  <p>9 шагов. Отмечай пройденные, прогресс сохранится в этом браузере.</p>
+  <ol id="toc">
+    <li><a href="#s1">Что такое Claude</a></li>
+    <li><a href="#s2">Где он работает и как зарегистрироваться</a></li>
+    <li><a href="#s3">Какой тариф выбрать</a></li>
+    <li><a href="#s4">Первая настройка</a></li>
+    <li><a href="#s5">Как писать запросы</a></li>
+    <li><a href="#s6">Проекты: папка с памятью</a></li>
+    <li><a href="#s7">Артефакты: сайты и игры прямо в чате</a></li>
+    <li><a href="#s8">Файлы, поиск и Claude Code</a></li>
+    <li><a href="#s9">10 готовых промптов для блога</a></li>
+  </ol>
+</nav>
+
+<section class="step" id="s1">
+  <div class="num">1</div>
+  <h2>Что такое Claude и чем он отличается</h2>
+  <p>Claude — это ИИ-ассистент от компании Anthropic. С ним переписываешься как с человеком, а он пишет тексты, разбирает файлы, делает таблицы, сайты, игры и помогает с кодом.</p>
+  <h3>За что его выбирают блогеры</h3>
+  <ul>
+    <li>Пишет живым языком, а не канцеляритом. Тексты меньше похожи на «написано нейросетью».</li>
+    <li>Держит в голове длинный разговор и большие файлы: можно загрузить свой контент-план, гайд или десяток постов.</li>
+    <li>Умеет собирать готовые вещи, а не только отвечать текстом: страницу, презентацию, мини-игру, таблицу.</li>
+    <li>Хорошо подстраивается под твой стиль, если показать ему примеры.</li>
+  </ul>
+  <button class="done-btn" data-step="s1" aria-pressed="false">Готово, иду дальше</button>
+</section>
+
+<section class="step" id="s2">
+  <div class="num">2</div>
+  <h2>Где он работает и как зарегистрироваться</h2>
+  <p>Claude доступен в большинстве стран мира: в Европе, Турции, ОАЭ, Грузии, Армении, Казахстане, Узбекистане, Кыргызстане, Таджикистане, Азербайджане, Молдове и многих других.</p>
+  <div class="note"><b>Важно.</b> Россия и Беларусь в официальный список пока не входят. Проверь свою страну в <a href="https://support.claude.com/en/articles/8461763-where-can-i-access-claude" target="_blank" rel="noopener">списке на сайте Claude</a> — он регулярно обновляется.</div>
+  <h3>Регистрация за 3 минуты</h3>
+  <ol class="list">
+    <li>Открой <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> или скачай приложение Claude для телефона или компьютера.</li>
+    <li>Войди через Google или введи почту. На почту придёт код или ссылка для входа.</li>
+    <li>Напиши, как к тебе обращаться. Иногда Claude просит подтвердить номер телефона.</li>
+    <li>Всё: перед тобой поле для сообщения. Напиши «Привет, расскажи, что ты умеешь» — так проще всего начать.</li>
+  </ol>
+  <button class="done-btn" data-step="s2" aria-pressed="false">Готово, аккаунт есть</button>
+</section>
+
+<section class="step" id="s3">
+  <div class="num">3</div>
+  <h2>Какой тариф выбрать</h2>
+  <p>Начни с бесплатного. Переходи на платный, когда начнёшь упираться в лимит сообщений.</p>
+  <div class="plans">
+    <div class="plan pick"><h4>Free <em>$0</em></h4><p>Чат, поиск в интернете, файлы, артефакты. Лимит обновляется каждые 5 часов. Для старта хватит.</p></div>
+    <div class="plan"><h4>Pro <em>$20</em></h4><p>В месяц, или $17 при оплате за год. В разы больше сообщений и Claude Code для сайтов и приложений.</p></div>
+    <div class="plan"><h4>Max <em>от $100</em></h4><p>Для тех, кто работает с Claude весь день и постоянно упирается в лимиты Pro.</p></div>
+  </div>
+  <div class="note">Цены указаны на ноябрь 2026. Актуальные всегда на <a href="https://claude.com/pricing" target="_blank" rel="noopener">claude.com/pricing</a>.</div>
+  <button class="done-btn" data-step="s3" aria-pressed="false">Готово, тариф понятен</button>
+</section>
+
+<section class="step" id="s4">
+  <div class="num">4</div>
+  <h2>Первая настройка: расскажи о себе один раз</h2>
+  <p>В настройках профиля есть поле, где можно написать, кто ты и как тебе отвечать. Claude будет учитывать это в каждом чате, и не придётся объяснять одно и то же заново.</p>
+  <h3>Пример, который можно взять за основу</h3>
+  <div class="card">
+    <pre id="p-profile">Меня зовут [имя]. Я веду блог в Instagram про [тема], моя аудитория — [кто они].
+Отвечай простым языком, без воды и сложных терминов.
+Если задача непонятна — сначала задай мне уточняющие вопросы.
+Тексты для соцсетей пиши живо, короткими предложениями, без канцелярита.</pre>
+    <button class="copy" data-copy="p-profile">Скопировать</button>
+  </div>
+  <p style="margin-top:16px">Ещё у Claude есть память: он может запоминать важное из прошлых разговоров. Её можно включить или выключить в настройках.</p>
+  <button class="done-btn" data-step="s4" aria-pressed="false">Готово, настроила</button>
+</section>
+
+<section class="step" id="s5">
+  <div class="num">5</div>
+  <h2>Как писать запросы, чтобы ответ был сразу хорошим</h2>
+  <p>Главная ошибка новичков — запрос в одну строку. Claude не знает тебя, твою аудиторию и цель. Чем больше контекста, тем меньше переделок.</p>
+  <div class="compare">
+    <div class="bad"><small>Так себе</small>Напиши пост про нейросети.</div>
+    <div class="good"><small>Хорошо</small>Я веду блог про ИИ для девушек 20–30 лет, которые только начинают. Напиши пост для Instagram про 3 нейросети для учёбы. Тон дружеский, до 800 знаков, в конце вопрос к подписчикам.</div>
+  </div>
+  <h3>Формула хорошего запроса</h3>
+  <ol class="formula">
+    <li><b>Кто ты.</b> «Я веду блог про…», «Я фрилансер, делаю…»</li>
+    <li><b>Что нужно.</b> Одна конкретная задача.</li>
+    <li><b>Для кого и зачем.</b> Аудитория и цель: продать, объяснить, развлечь.</li>
+    <li><b>Какой формат.</b> Длина, структура, тон, список или текст.</li>
+    <li><b>Пример.</b> Твой прошлый пост или текст, который нравится. Это сильнее всего влияет на результат.</li>
+  </ol>
+  <div class="note"><b>Лайфхак.</b> Не нравится ответ — не начинай заново, а скажи, что поправить: «короче», «живее», «убери смайлы», «сделай 3 варианта». Если чат стал очень длинным и Claude начал путаться, открой новый.</div>
+  <button class="done-btn" data-step="s5" aria-pressed="false">Готово, формулу запомнила</button>
+</section>
+
+<section class="step" id="s6">
+  <div class="num">6</div>
+  <h2>Проекты: папка, которая помнит твой блог</h2>
+  <p>Проект — это папка с инструкциями и файлами. Все чаты внутри неё сразу знают контекст. Для блога это самая полезная функция.</p>
+  <h3>Как собрать проект «Мой блог»</h3>
+  <ol class="list">
+    <li>В меню слева найди «Проекты» и создай новый.</li>
+    <li>В инструкции напиши, о чём блог, кто аудитория и какой у тебя тон.</li>
+    <li>Загрузи файлы: 5–10 своих лучших постов, описание продуктов, контент-план.</li>
+    <li>Теперь любой новый чат в проекте пишет в твоём стиле с первого сообщения.</li>
+  </ol>
+  <button class="done-btn" data-step="s6" aria-pressed="false">Готово, проект создан</button>
+</section>
+
+<section class="step" id="s7">
+  <div class="num">7</div>
+  <h2>Артефакты: сайты, игры и таблицы прямо в чате</h2>
+  <p>Попроси Claude сделать страницу, калькулятор, чек-лист или мини-игру, и он соберёт её рядом с чатом. Её можно сразу открыть, попросить поправить словами и поделиться ссылкой.</p>
+  <p>Так я делаю свои игры: описываю идею обычным языком, а потом правлю фразами вроде «сделай кнопку больше» или «добавь счёт очков».</p>
+  <div class="card">
+    <h4>Попробуй прямо сейчас</h4>
+    <pre id="p-game">Сделай простую мини-игру в браузере: на экране появляются кружки, их нужно успеть нажать за 30 секунд. Покажи счёт и кнопку «Играть снова». Цвета чёрный и оранжевый.</pre>
+    <button class="copy" data-copy="p-game">Скопировать</button>
+  </div>
+  <button class="done-btn" data-step="s7" aria-pressed="false">Готово, собрала первую игру</button>
+</section>
+
+<section class="step" id="s8">
+  <div class="num">8</div>
+  <h2>Файлы, поиск в интернете и Claude Code</h2>
+  <h3>Файлы</h3>
+  <p>Загружай PDF, фото, скриншоты и таблицы. Попроси сделать выжимку из лекции, разобрать статистику аккаунта по скриншоту или найти ошибки в договоре.</p>
+  <h3>Поиск в интернете</h3>
+  <p>Claude умеет искать свежую информацию и даёт ссылки на источники. Полезно, когда нужны новости, цены или тренды.</p>
+  <h3>Claude Code</h3>
+  <p>Это режим для создания сайтов, приложений и автоматизаций: Claude сам пишет код, запускает его и исправляет ошибки. Работает на платных тарифах. Для старта он не нужен, но к нему стоит прийти, когда освоишься.</p>
+  <div class="note"><b>Безопасность.</b> Не отправляй в чат пароли, номера карт и паспортные данные.</div>
+  <button class="done-btn" data-step="s8" aria-pressed="false">Готово, всё попробовала</button>
+</section>
+
+<section class="step" id="s9">
+  <div class="num">9</div>
+  <h2>10 готовых промптов для блога</h2>
+  <p>Скопируй, замени то, что в квадратных скобках, и отправь.</p>
+  <div class="prompts" id="prompts"></div>
+  <button class="done-btn" data-step="s9" aria-pressed="false">Готово, промпты забрала</button>
+</section>
+
+<section class="end">
+  <h2>Ты прошла гайд. Что дальше?</h2>
+  <p>В Instagram я показываю, как делаю с Claude контент, сайты и игры: по шагам и на реальных примерах.</p>
+  <a class="start" href="https://www.instagram.com/tannyff_m/" target="_blank" rel="noopener">Смотреть @tannyff_m</a>
+  <p class="small">Готовлю интенсив «Рилс через Claude: от идеи до монтажа». Напиши мне в директ слово ИНТЕНСИВ, чтобы узнать о старте первой.</p>
+</section>
+
+<footer>Гайд не связан с компанией Anthropic. Claude — продукт Anthropic.</footer>
+</main>
+
+<script>
+const PROMPTS=[
+ ["Шапка профиля","Я веду Instagram про [тема] для [аудитория]. Предложи 5 вариантов шапки профиля до 150 знаков: кто я, чем полезна и что можно получить. Без воды и громких обещаний."],
+ ["Контент-план на 2 недели","Составь контент-план на 14 дней для Instagram про [тема]. Аудитория: [кто]. Чередуй пользу, личные истории и продающие ролики. Для каждого дня: формат (рилс или карусель), тема и первая фраза-хук."],
+ ["10 хуков","Придумай 10 первых фраз для рилс на тему [тема]. Каждая до 8 слов и цепляет за 2 секунды: через любопытство, спор, цифру или ошибку. Не используй слова «секрет» и «лайфхак»."],
+ ["Сценарий рилс на 30 секунд","Напиши сценарий рилс на 30 секунд на тему [тема]. Структура: хук, 3 коротких пункта пользы, призыв написать слово [СЛОВО] в комментариях. Пиши разговорным языком, как будто я говорю подруге."],
+ ["Текст карусели","Сделай текст для карусели из 7 слайдов на тему [тема]. Слайд 1 — цепляющий заголовок, слайды 2–6 — по одной мысли на слайд до 20 слов, слайд 7 — вывод и вопрос к подписчикам."],
+ ["Подпись к посту","Напиши подпись к рилс про [тема]: 2–3 предложения, вопрос к зрителям и призыв написать [СЛОВО] в комментариях, чтобы получить [что получат]. Добавь 5 хэштегов."],
+ ["Перепиши в моём стиле","Вот 3 моих поста: [вставь тексты]. Определи мой стиль: длина фраз, тон, любимые слова. Затем перепиши этот текст в моём стиле: [вставь текст]."],
+ ["Разбор чужого ролика","Вот текст и обложка ролика, который набрал много просмотров: [вставь]. Разбери, почему он сработал: хук, структура, эмоция, призыв. Потом предложи 3 идеи для моего блога про [тема] по той же схеме, но не копируя."],
+ ["Ответ на сложный комментарий","Мне написали комментарий: [вставь]. Предложи 3 спокойных ответа: дружелюбный, с юмором и уверенный. Без оправданий и до 2 предложений."],
+ ["Идея бесплатного материала","Моя аудитория: [кто], тема блога: [тема]. Предложи 5 идей бесплатных материалов, которые можно отправлять за кодовое слово в комментариях. Для каждой: название, что внутри и почему люди захотят его получить."]
+];
+const box=document.getElementById('prompts');
+PROMPTS.forEach(([t,p],i)=>{
+  const c=document.createElement('div');c.className='card';
+  c.innerHTML='<h4></h4><pre id="pp'+i+'"></pre><button class="copy" data-copy="pp'+i+'">Скопировать</button>';
+  c.querySelector('h4').textContent=(i+1)+'. '+t;
+  c.querySelector('pre').textContent=p;
+  box.appendChild(c);
+});
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.copy');if(!b)return;
+  const txt=document.getElementById(b.dataset.copy).textContent;
+  const ok=()=>{b.textContent='Скопировано';b.classList.add('ok');setTimeout(()=>{b.textContent='Скопировать';b.classList.remove('ok')},1600)};
+  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(txt).then(ok).catch(()=>fallback(txt,ok))}else fallback(txt,ok);
+});
+function fallback(txt,ok){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok()}catch(e){}t.remove()}
+
+// прогресс живёт только в этом браузере; хранилище может быть недоступно
+const KEY='claude-start-done';
+let done={};
+try{done=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){done={}}
+const btns=[...document.querySelectorAll('.done-btn')];
+function render(){
+  btns.forEach(b=>b.setAttribute('aria-pressed',!!done[b.dataset.step]));
+  document.querySelectorAll('#toc a').forEach(a=>a.classList.toggle('done',!!done[a.getAttribute('href').slice(1)]));
+  const n=btns.filter(b=>done[b.dataset.step]).length;
+  document.getElementById('bar').style.width=(n/btns.length*100)+'%';
+}
+btns.forEach(b=>b.addEventListener('click',()=>{
+  const s=b.dataset.step;done[s]=!done[s];
+  try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}
+  render();
+  if(done[s]){const next=b.closest('section').nextElementSibling;if(next&&next.scrollIntoView)next.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
+}));
+render();
+
+// печатающийся запрос на первом экране
+const lines=["Сделай мне контент-план на неделю для блога про ИИ","Напиши сценарий рилс на 30 секунд с сильным хуком","Собери мини-игру в чёрно-оранжевых цветах"];
+const el=document.getElementById('typed');
+if(matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=lines[0]}
+else{
+  let li=0,ci=0,del=false;
+  (function tick(){
+    const s=lines[li];
+    el.textContent=s.slice(0,ci);
+    if(!del&&ci<s.length){ci++;setTimeout(tick,45)}
+    else if(!del){del=true;setTimeout(tick,1800)}
+    else if(ci>0){ci--;setTimeout(tick,18)}
+    else{del=false;li=(li+1)%lines.length;setTimeout(tick,300)}
+  })();
+}
+</script>
+</body>
+</html>
